@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -25,7 +26,9 @@ jobs:
       - name: Tests
         run: npm test
       - name: Build installable tarball
-        run: npm pack --pack-destination dist
+        run: |
+          mkdir -p dist
+          npm pack --pack-destination dist
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
