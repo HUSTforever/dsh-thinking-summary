@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-19
+
+First release installable through the DSH plugin manager.
+
+### Added
+
+- DSH bundle metadata (`dsh.manifestVersion`, `engines.dsh`) so the Plugins
+  page and `dsh plugin add` install and enable the package directly.
+- Release workflow: every `v*` tag runs the checks, packs the npm tarball and
+  attaches it to the GitHub release.
+- `tests/manifest.mjs` guards the install contract: bundle patch, client
+  export, shipped files and Node-only host imports.
+- Install and update instructions for the Plugins page, the CLI, and manual
+  development copies.
+
+### Changed
+
+- The README install section now leads with plugin-manager installation; the
+  manual copy is documented as a development fallback.
+- The package declares public npm access and its compatible DSH range.
+
+### Unchanged
+
+- Summary generation and presentation are the same as 0.2.0.
+
 ## [0.2.0] - 2026-10-19
 
 Per-step progress summaries inside the native thinking disclosure, replacing

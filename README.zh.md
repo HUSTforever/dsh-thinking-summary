@@ -32,39 +32,52 @@
 - 摘要通过独立 HTTP 服务传递，不写入会话日志，也不进入模型上下文。
 - 浏览器缓存区分原文、provider、model、locale；服务端缓存还区分摘要格式版本、长度预算、输出上限和思考设置。
 
-## 安装与更新
+## 安装
 
-已核对 DeepSeek Harness Windows 桌面端 `0.2.1-rc.2`。插件为手写经典脚本 bundle，只导入基线 `react`，不需要构建或安装依赖。
+插件以 DSH 组合包（bundle）的形式安装：manifest 指向 `cordis.patch.yml`，插件管理器会下载包、把它加入 profile 的 bundles，并自动应用默认配置。不需要手工复制文件，也不需要修改 profile。
+
+已核对 Harness 桌面端 `0.2.1-rc.2`；manifest 声明 `engines.dsh: ">=0.2.1-rc.2"`。
+
+### 在 Web / 桌面端「插件」页安装
+
+1. 侧栏打开**插件**。
+2. 点**添加插件**，选择**安装第三方插件**。
+3. 粘贴以下任一安装源：
+   - Release 压缩包：
+     `https://github.com/HUSTforever/dsh-thinking-summary/releases/download/v0.3.0/dsh-thinking-summary-0.3.0.tgz`
+   - Git 标签：`github:HUSTforever/dsh-thinking-summary#v0.3.0`
+4. 安装完成后如出现**立即启用**，选择启用。
+5. 在**插件 → 已安装插件 → dsh-thinking-summary** 页面选择摘要模型和语言。
+
+默认配置由组合包 patch 提供（`language: auto`、`thinking: 'off'`、`maxChars: 600`），无需再往 profile 的 `cordis.patch.yml` 添加条目。
+
+### 用 CLI 安装（web、TUI、headless profile）
 
 ```powershell
-git clone https://github.com/HUSTforever/dsh-thinking-summary.git
+dsh plugin --profile <profile> add <安装源>
 ```
 
-将 `package.json`、`cordis.patch.yml`、`lib/` 以及 README、CHANGELOG、LICENSE 复制到：
+安装源同上。桌面 profile 由桌面应用托管，请在「插件」页安装。
+
+### 手工安装（仅开发调试）
+
+要测试本地改动而不是安装组合包时，把 `package.json`、`cordis.patch.yml`、`lib/` 以及 README、CHANGELOG、LICENSE 复制到：
 
 ```text
 %USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-thinking-summary
 ```
 
-更新时 `git pull` 后重新复制上述文件即可；需要固定版本时先 `git checkout v0.2.0` 这类标签。
+再把 [cordis.patch.yml](cordis.patch.yml) 里的 insert 条目加到 profile 的 `cordis.patch.yml`。已经安装组包时不要再手工添加，否则条目会被插入两次。
 
-在桌面 profile 的 `cordis.patch.yml` 中保留一份条目：
+### 更新
 
-```yaml
-- insert:
-    - id: thinking-summary
-      name: dsh-thinking-summary
-      config:
-        language: auto
-        thinking: 'off'
-        maxChars: 600
-```
+第三方组合包通过「卸载旧版 → 安装新安装源」升级（插件页会分别提供卸载和安装）。每个版本都有固定标签，例如 `github:HUSTforever/dsh-thinking-summary#v0.3.0`。
 
-修改配置可触发 profile 热加载；替换已经导入的 JS 文件后，退出并重新打开 Harness，确保前后端都加载新版代码。主机端口可能在重启后变化。
+修改 profile 配置可触发热加载；替换已经导入的 JS 文件后，刷新页面（主机半侧有改动时重启 Harness）以加载新版代码。主机端口可能在重启后变化，可在当前端口检查 `/dsh-thinking-summary/health`。
 
 ```powershell
 Invoke-WebRequest http://127.0.0.1:<当前端口>/dsh-thinking-summary/health
-# version: 0.2.0，client 应指向本插件 lib/client.js
+# version: 0.3.0，client 应指向本插件 lib/client.js
 ```
 
 ## 插件设置
@@ -100,7 +113,7 @@ npm version patch --message "release: v%s"   # 或 minor / major
 git push --follow-tags
 ```
 
-`npm version` 会更新 `package.json`、创建提交和带注释的 `vX.Y.Z` 标签。GitHub Actions 在每次 push 和 PR 时执行 `npm run check` 与 `npm test`。发布说明维护在 [CHANGELOG.md](CHANGELOG.md)，可用 `gh release create vX.Y.Z` 按对应小节发布。
+`npm version` 会更新 `package.json`、创建提交和带注释的 `vX.Y.Z` 标签。用 `git push --follow-tags` 推送后，Release 工作流会执行检查、打包 `dsh-thinking-summary-X.Y.Z.tgz` 并创建带该压缩包的 GitHub Release；每个版本都可以直接用压缩包地址或 Git 标签安装。CI 在每次 push 和 PR 时执行 `npm run check` 与 `npm test`。
 
 ## 验证
 

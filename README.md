@@ -8,6 +8,8 @@ Codex-style per-step reasoning summaries inside DeepSeek Harness's native thinki
 
 Version 0.2 replaces the old end-of-turn card beneath the final answer. It updates during each model step and completes the final snapshot when the step settles. It summarizes high-level actions and findings without reproducing private deliberation or claiming planned actions have succeeded.
 
+Version 0.3 packages the plugin as an installable DSH bundle: a release tarball and Git tag can be installed from the Plugins page or `dsh plugin`, without copying files into the profile. Summary behavior is unchanged from 0.2.
+
 This approximates Codex's presentation. DeepSeek still requires an auxiliary model request, so latency and generation behavior differ from OpenAI's native reasoning-summary stream. See [reasoning summaries](https://developers.openai.com/api/docs/guides/reasoning) and [streaming events](https://developers.openai.com/api/reference/resources/responses/streaming-events).
 
 ## Behavior
@@ -22,38 +24,65 @@ This approximates Codex's presentation. DeepSeek still requires an auxiliary mod
 - No session events or model-visible messages are modified. The browser creates display-only copies of reasoning blocks.
 - Cache identity includes provider, model, locale and exact text; host cache also includes prompt version and output settings. Old retrospective summaries are not reused for the new format.
 
-## Install / update
+## Install
 
-Verified reference version: Harness desktop `0.2.1-rc.2` on Windows. The plugin
-is plain source with no build step, so installation is a file copy:
+The plugin installs as a DSH bundle: its manifest points at `cordis.patch.yml`,
+so the plugin manager downloads the package, adds it to the profile's bundle
+list, and applies the defaults. No file copying and no manual profile edit are
+required.
+
+Tested with Harness desktop `0.2.1-rc.2`; the package declares
+`engines.dsh: ">=0.2.1-rc.2"`.
+
+### From the Plugins page (desktop and Web)
+
+1. Open **Plugins** in the sidebar.
+2. Choose **Add plugin**, then **Install a third-party plugin**.
+3. Paste one of these specs:
+   - Release tarball:
+     `https://github.com/HUSTforever/dsh-thinking-summary/releases/download/v0.3.0/dsh-thinking-summary-0.3.0.tgz`
+   - Git tag: `github:HUSTforever/dsh-thinking-summary#v0.3.0`
+4. Install, then choose **Enable now** if the dialog offers it.
+5. Open **Plugins → Installed plugins → dsh-thinking-summary** to pick the
+   summary model and language.
+
+The bundle supplies the defaults (`language: auto`, `thinking: off`,
+`maxChars: 600`), so nothing needs to be added to the profile's
+`cordis.patch.yml`.
+
+### From the CLI (web, TUI and headless profiles)
 
 ```powershell
-git clone https://github.com/HUSTforever/dsh-thinking-summary.git
+dsh plugin --profile <profile> add <spec>
 ```
 
-Copy `package.json`, `cordis.patch.yml`, `lib/` and the README/CHANGELOG/LICENSE
-files into:
+Pass the same tarball URL or Git spec as above. The desktop profile is owned by
+the desktop app, so install there through the Plugins page instead.
+
+### Manual installation (development only)
+
+To test local changes without installing the bundle, copy `package.json`,
+`cordis.patch.yml`, `lib/` and the README/CHANGELOG/LICENSE files into:
 
 ```text
 %USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-thinking-summary
 ```
 
-To update, `git pull`, copy the same files again, and refresh the page. To pin a
-specific release, check out its tag first (for example `git checkout v0.2.0`).
+and add the insert entry from [cordis.patch.yml](cordis.patch.yml) to the
+profile's `cordis.patch.yml`. Do not do this on a profile where the bundle is
+already installed — the entry would be inserted twice.
 
-Keep one entry in the profile's `cordis.patch.yml`:
+### Updating
 
-```yaml
-- insert:
-    - id: thinking-summary
-      name: dsh-thinking-summary
-      config:
-        language: auto
-        thinking: 'off'
-        maxChars: 600
-```
+Third-party bundles upgrade by removing the installed copy and installing the
+newer spec; the Plugins page offers this as uninstall followed by install. Tags
+give every release a stable spec, for example
+`github:HUSTforever/dsh-thinking-summary#v0.3.0`.
 
-Profile configuration can reload live. After replacing already-imported JavaScript, refresh the page (and restart Harness if the host half changed) to load both halves. Its local port may change; check `/dsh-thinking-summary/health` on the current port.
+Profile configuration can reload live. After replacing already-imported
+JavaScript, refresh the page (and restart Harness if the host half changed) to
+load both halves. The local port may change; check
+`/dsh-thinking-summary/health` on the current port.
 
 ## Plugin settings
 
@@ -84,7 +113,7 @@ npm version patch --message "release: v%s"   # or minor / major
 git push --follow-tags
 ```
 
-`npm version` updates `package.json`, commits and creates the annotated `vX.Y.Z` tag. GitHub Actions runs `npm run check` and `npm test` on every push and pull request. Release notes live in [CHANGELOG.md](CHANGELOG.md); publish a release from the matching section with `gh release create vX.Y.Z --notes "..."`.
+`npm version` updates `package.json`, commits and creates the annotated `vX.Y.Z` tag. Push it with `git push --follow-tags`; the Release workflow then runs the checks, packs `dsh-thinking-summary-X.Y.Z.tgz` and creates the GitHub release with that tarball attached. Every release is installable from its asset URL or its Git tag. CI runs `npm run check` and `npm test` on every push and pull request.
 
 ## Development
 
