@@ -1,0 +1,18 @@
+# Local reference material extracted from the installed Harness bundle and
+# profile backups. These are working notes, not part of the plugin source.
+.refs/
+.backups/
+
+# Runtime state: the plugin writes to ~/.dsh/thinking-summary, never here.
+.dsh/
+
+# Dependencies and logs
+node_modules/
+*.log
+npm-debug.log*
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

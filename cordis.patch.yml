@@ -1,0 +1,23 @@
+# Per-step progress summaries in DeepSeek Harness's native thinking row.
+# The plugin is inert in compositions without a Web server: it only registers
+# its own routes there, and never writes session events or model-visible text.
+- insert:
+    - id: thinking-summary
+      name: dsh-thinking-summary
+      config:
+        # Leave provider/model empty to use the route the browser reports from
+        # the turn's own assistant messages (the conversation's exact model).
+        provider: ''
+        model: ''
+        # Target language. 'auto' follows the DSH locale (overridable in the
+        # plugin's settings card); an explicit tag such as zh or en pins it.
+        language: auto
+        # 'off' asks the provider to skip thinking for the summary call;
+        # providers that reject "off" are retried with their own default.
+        thinking: 'off'
+        maxChars: 600
+        maxOutputTokens: 220
+        minReasoningChars: 120
+        maxInputChars: 24000
+        timeoutMs: 45000
+        cacheSize: 400

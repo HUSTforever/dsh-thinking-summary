@@ -1,0 +1,54 @@
+{
+  "name": "dsh-thinking-summary",
+  "version": "0.2.0",
+  "description": "Codex-style per-step reasoning summaries inside DeepSeek Harness's native thinking disclosure.",
+  "type": "module",
+  "license": "MIT",
+  "author": "HUSTforever",
+  "homepage": "https://github.com/HUSTforever/dsh-thinking-summary#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HUSTforever/dsh-thinking-summary.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HUSTforever/dsh-thinking-summary/issues"
+  },
+  "scripts": {
+    "test": "node tests/smoke.mjs",
+    "check": "node --check lib/index.js && node --check lib/client.js"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "reasoning",
+    "thinking",
+    "summary"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-chat"]
+    }
+  }
+}
