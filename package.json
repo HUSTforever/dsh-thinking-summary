@@ -1,6 +1,6 @@
 {
   "name": "dsh-thinking-summary",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Codex-style per-step reasoning summaries inside DeepSeek Harness's native thinking disclosure.",
   "type": "module",
   "license": "MIT",
@@ -54,7 +54,9 @@
     },
     "client": {
       "platform": "web",
-      "inject": ["@deepseek-ai/dsh-client-ui-chat"]
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-chat"
+      ]
     }
   }
 }
